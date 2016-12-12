@@ -1,0 +1,76 @@
+var N=parseInt(readline());	// Taille du dictionnaire
+var dico=new Array(N);		// Creation d un tableau dico pour stocker les mots du dictionnaire
+for (var i=0; i<N; i++) {	// Saisies des mots acceptes
+    dico[i]= readline();		// Ecriture des mots du dictionnaire par l utilisateur
+}								// Exemple : LETTER=azertyu
+var LETTERS=readline();		// Mot : fruit de la juxtaposition des 7 lettres tirees, sans sens a priori
+var annuairePoints=new Array(26);
+annuairePoints=['e01','a01','i01','o01','n01','r01','t01','l01','s01','u01','d02','g02',
+'b03','c03','m03','p03','f04','h04','v04','w04','y04','k05','j08','x08','q10','z10'];						
+lettresRestantes=new Array(7);
+var motsRapportentPoints=new Array(1);
+//motsRapportentPoints[i1,pointMot_i1,i2,pointMot_i2]
+//----------------------------------------debut des tests--------------------------------------
+for (var i=0; i<N; i++) {				// On parcourt le tableau dico
+	for (var b=0; b<7; b++){				// Remplissage de ce second tableau avec une lettre par case
+        lettresRestantes[b]=LETTERS.charAt(b);
+    }
+	var mot='';			// ce que l on completera pour tendre vers le mot du dico que l on etudie
+	var pointMot=0;
+	var pointJ;
+	var j=0;								// Est-il candidat au vu de nos lettres tirees ?
+    while(j<dico[i].length){// pour chaque mot i du dico on passe en revu ses lettres j une à une et
+		//---------------------------------------- Point(s) gagne(s) si lettre trouvee *******************
+		for (var g=0;g<26;g++){
+			if (dico[i].charAt(j)===annuairePoints[g].charAt(0)){
+				pointJ=10*annuairePoints[g].charAt(1)+1*annuairePoints[g].charAt(2);
+			}
+		}
+		//----------------------------------------********************************************************
+        for (var k=0; k<lettresRestantes.length; k++){	//la jeme lettre du ieme mot = la kieme lettre tiree?
+            if(dico[i].charAt(j)===lettresRestantes[k]){	// === test d egalite stricte
+				mot=mot+lettresRestantes[k];				// on agrandit le mot qui tend a ressembler a dico[i]
+				pointMot=pointMot+pointJ;
+				lettresRestantes.splice(k,1);// On supprime le kieme element du tableau lettresRestantes
+				k=lettresRestantes;			// Attention: lettresRestantes a diminue de un
+            }
+        }
+		if (mot.length-1<j){	// lettre j non presente dans lettresRestantes:mot non agrandi
+			j=dico[i].length;	// interruption boucle while, passage au mot suivant dans dico
+			mot='';
+			pointMot=0;
+		}
+		j++;
+    }// fin du while : parcours des lettres j du mot i
+	if (mot===dico[i]){//succes
+		if (motsRapportentPoints.length===1){
+			motsRapportentPoints[motsRapportentPoints.length-1]=i;
+		}
+		else{
+			motsRapportentPoints.push(i);
+		}
+		motsRapportentPoints.push(pointMot);
+		/*var result=mot;
+		var pointMot_i=pointMot;
+		i=N;	//On ne cherche pas de second mot pour l instant*/
+	}
+}//fin premier for
+//-------------------------------------traitement final-----------------------------------------
+//Recherche points maximum
+var max=motsRapportentPoints[1];
+var meilleurIndice=0;
+if (motsRapportentPoints.length>2){
+	for (var indiceMoitie=1;indiceMoitie*2<motsRapportentPoints.length;indiceMoitie++){
+		if (motsRapportentPoints[2*indiceMoitie+1]>max){
+			max=motsRapportentPoints[2*indiceMoitie+1];
+			meilleurIndice=indiceMoitie*2;
+		}
+	}
+	affichage=dico[motsRapportentPoints[meilleurIndice]];
+}
+else{
+	affichage=dico[motsRapportentPoints[0]];
+}
+
+//----------------------Affichage-------------------------
+print(affichage);
