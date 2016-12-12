@@ -1,3 +1,0 @@
-# game
-puzzle
-print ("Hello")
