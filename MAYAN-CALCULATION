@@ -1,0 +1,111 @@
+var inputs = readline().split(' ');
+var L = parseInt(inputs[0]);
+var H = parseInt(inputs[1]);
+var nombres=new Array(20*H);//nombres[0]=symboles premiere ligne nombre code zero
+for (var i=0; i<H; i++) {   //nombres[1]=symboles premiere ligne nombre code un
+    var numeral = readline();//nombres[20]=symboles seconde ligne nombre code zero
+	for (var x=0;x<20;x++){	//nombres[44]=symboles quatrieme ligne nombre code quatre
+		nombres[20*i+x]=numeral.substring(x*L,(x+1)*L);
+	}
+}
+var S1 = parseInt(readline());
+var maya1=new Array(S1);
+for (var i = 0; i < S1; i++) {	//maya[0]=symboles premiere ligne premier digit nombre code n°1
+    var num1Line = readline();	//maya[1]=symboles deuxieme ligne premier digit nombre code n°1
+	maya1[i]=num1Line;         //maya[H]=symboles premiere ligne deuxieme digit nombre code n°1
+}
+var S2 = parseInt(readline());
+var maya2=new Array(S2);
+for (var i = 0; i < S2; i++) {
+    var num2Line = readline();
+	maya2[i]=num2Line;
+}
+var operation = readline();
+//---------------Traduction de maya1 et maya 2 en decimal------------
+var N1=0;
+var nbDigits1=S1/H;
+var nbValidations;
+//-------------nombre 1-----------
+for (var j=0;j<nbDigits1;j++){		// nombre de digit
+	nbValidations=0;
+	for (var k=0;k<20;k++){			// test pour chaque nombre en maya, de 0 à 19
+		for (var a=0;a<H;a++){//
+    		if (a===0){
+    	        nbValidations=0;
+    	    }
+			if (maya1[H*j+a]===nombres[20*a+k]){
+				nbValidations=nbValidations+1;
+				if (nbValidations===H){
+					N1=N1+k*Math.pow(20, nbDigits1-1-j);//Math.pow(base, exposant);
+				}
+			}
+		}
+	}
+}
+//-------------nombre 2-----------
+var N2=0;
+var nbDigits2=S2/H;
+for (var j=0;j<nbDigits2;j++){		// nombre de digit
+	nbValidations=0;
+	for (var k=0;k<20;k++){			// test pour chaque nombre en maya, de 0 à 19
+		for (var a=0;a<H;a++){
+		    if (a===0){
+    	        nbValidations=0;
+    	    }
+			if (maya2[H*j+a]===nombres[20*a+k]){
+				nbValidations=nbValidations+1;
+				if (nbValidations===H){
+					N2=N2+k*Math.pow(20, nbDigits2-1-j);//Math.pow(base, exposant);
+					a=H;
+					k=20;
+				}
+			}
+		}
+	}
+}
+//-------------------------------------------------------------------
+var resultatDecimal=0;
+if (operation==='*'){
+	resultatDecimal=N1*N2;
+}
+if (operation==='/'){
+	resultatDecimal=N1/N2;
+}
+if (operation==='+'){
+	resultatDecimal=N1+N2;
+}
+if (operation==='-'){
+	resultatDecimal=N1-N2;
+}
+//---------recherche digits resultat---------------
+//*******************partie 1***********************
+var nbDigitsResult;
+var alpha=14;
+var trouve=0;
+while (alpha>=0){
+	if (resultatDecimal>=Math.pow(20, alpha) && trouve===0){
+		nbDigitsResult=alpha+1;
+		trouve=1;
+	}
+	alpha=alpha-1;
+}
+if (resultatDecimal===0){
+	nbDigitsResult=1;
+}
+//*******************partie 2*********************** code OK avant ici
+var digitsResult=new Array(nbDigitsResult);
+for (var AAA=nbDigitsResult;AAA>0;AAA--){
+	for (var BBB=0;BBB<20;BBB++){
+		if (resultatDecimal-BBB*Math.pow(20, AAA-1)>=0 && resultatDecimal-(BBB+1)*Math.pow(20, AAA-1)<0){
+			resultatDecimal=resultatDecimal-(BBB)*Math.pow(20, AAA-1);
+			digitsResult[nbDigitsResult-AAA]=BBB;
+		}
+	}
+}
+//-------------------------------------------------
+//Affichage
+for (var t=0;t<nbDigitsResult;t++){
+	for (var i=0;i<H;i++){
+		print(nombres[20*i+digitsResult[t]]);
+	}
+}
